@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { Cat } from 'src/cats/interfaces/cat.interface';
 import { CreateCatDto } from './dto/create-cat.dto';
@@ -14,11 +23,20 @@ export class CatsController {
 
   @Get()
   async findAll(): Promise<Cat[]> {
-    return this.catsService.findAll();
+    // return this.catsService.findAll();
+    throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): string {
+  findOne(
+    @Param(
+      'id',
+      new ParseIntPipe({
+        errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE,
+      }),
+    )
+    id: number,
+  ): string {
     return `${id} cat`;
   }
 }
